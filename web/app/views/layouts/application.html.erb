@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <%= stylesheet_link_tag    "application" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+  <style>
+    body { color: #333; }
+    h1, h2, h3 { font-size: 105%; }
+    div#main {
+      border: gray solid thin;
+      padding: 1em;
+    }
+  </style>
+  <script>
+    $(function() {
+      //var timeout = 100;
+      var timeout = null;
+      $("a.js-pjax").pjax("#main");   // #main の中身をAjaxで切り替える
+      $('a[data-pjax]').pjax({ timeout: timeout, error: function(xhr, err){ alert(err); } });
+      $('#main').bind('start.pjax', function(xhr, options){
+        $(this).hide();
+      });
+      $('#main').bind('end.pjax', function(xhr, options){
+        $(this).fadeIn(500);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>PJax Sample</h1>
+  <section>
+    <h2>Non PJax</h2>
+    <ul>
+      <li><%= link_to("not pjax page A", pages_path('a')) %></li>
+      <li><%= link_to("not pjax page B", pages_path('b')) %></li>
+    </ul>
+  </section>
+  <section>
+    <h2>PJax with class</h2>
+    <ul>
+      <li><%= link_to("page A", pages_path('a'), {:class => "js-pjax" }) %></li>
+      <li><%= link_to("page B", pages_path('b'), {:class => "js-pjax" }) %></li>
+    </ul>
+  </section>
+  <section>
+    <h2>Using data-pjax attr</h2>
+    <ul>
+      <li><%= link_to("page A", pages_path('a'), { "data-pjax" => "#main" }) %></li>
+      <li><%= link_to("page B", pages_path('b'), { "data-pjax" => "#main" }) %></li>
+    </ul>
+  </section>
+  <section>
+    <h2>Slow request(2 sec)</h2>
+    <ul>
+      <li><%= link_to("page A", pages_path('a', :slow => 1), { "data-pjax" => "#main" }) %></li>
+      <li><%= link_to("page B", pages_path('b', :slow => 1), { "data-pjax" => "#main" }) %></li>
+    </ul>
+  </section>
+  <section>
+    <h2>メイン</h2>
+    <div id="main"><%= yield %></div>
+    <div id="container" style="display:none"></div>
+  </section>
+</body>
+</html>
